@@ -6,12 +6,17 @@ const config: Config = {
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
+  darkMode: 'class',
   theme: {
     extend: {
-      backgroundImage: {
-        "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
-        "gradient-conic":
-          "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
+      colors:{
+        primary: '#fff',
+        trans:'#ffffffcc',
+        transDark:'#202025cc',
+        dark:'#000',
+        darkBg:'#202025',
+        second:'#06a4ff',
+        third:'#8756ff',
       },
     },
   },

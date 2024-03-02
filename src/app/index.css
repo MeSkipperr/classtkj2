@@ -1,0 +1,41 @@
+@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Montserrat&family=Pacifico&family=Qwitcher+Grypen:wght@700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Kalnia:wght@600&family=Source+Code+Pro&display=swap');
+
+*{
+    margin: 0;
+    padding: 0;
+    font-family: 'Montserrat', sans-serif;
+    scroll-behavior: smooth;
+    /* text-align: center; */
+    scroll-padding-top:1.5rem;
+}
+
+h1{
+    font-family: "Archivo Black", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+}
+h1.dua{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+h1.texttkj{
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+.bgHero{
+    background: linear-gradient(to right, #ececec 10%, #ffffff00 10%);
+}
+.bgHerodark{
+    background: linear-gradient(to right, #101012cc 10%, #ffffff00 10%);
+
+}
+
+h2{
+    font-family: 'Kalnia', serif;
+}
+
