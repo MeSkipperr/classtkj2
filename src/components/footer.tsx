@@ -1,9 +1,13 @@
-import FooterBG from '../assets/lightFooter.svg';
-import FooterBGDark from '../assets/darkFooter.svg';
+"use client";
+
+import FooterBG from '@/assets/lightFooter.svg';
+import FooterBGDark from '@/assets/darkFooter.svg';
 import Image from 'next/image';
 
+import CheckMode from '@/function/globalState'
 
-const Footer = ({ mode }: { mode?:Boolean })=>{
+const Footer = ()=>{
+    const { mode } = CheckMode();
     return(
         <>
         <Image src={mode ? FooterBGDark : FooterBG} alt='footer background'  className='w-full'  />

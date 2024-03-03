@@ -1,4 +1,4 @@
-import smkIcon from '../icons/smkn1kutaselatan.png'
+import smkIcon from '@/assets/icons/smkn1kutaselatan.png'
 import Image from 'next/image';
 import { GoHome } from "react-icons/go";
 import { CiImageOn } from "react-icons/ci";

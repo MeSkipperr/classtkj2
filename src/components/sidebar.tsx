@@ -1,7 +1,57 @@
-import userPic from '../icons/1.png'
+"use client";
+
+import userPic from '@/assets/icons/1.png'
 import Image from 'next/image';
-import { ReactNode, useContext, useState,createContext } from 'react';
+import { ReactNode, useContext, useState,createContext, useEffect } from 'react';
 import { SlArrowLeft ,SlArrowRight } from "react-icons/sl";
+
+import { GoHome } from "react-icons/go";
+import { CiImageOn } from "react-icons/ci";
+import { IoMdNotificationsOutline } from "react-icons/io";
+import { LuUser2 } from "react-icons/lu";
+import { FiMenu } from "react-icons/fi";
+
+import CheckMode from '@/function/globalState'
+import Link from 'next/link';
+
+const SideBarCom = ()=>{
+  const { mode } = CheckMode();
+
+  const [isLgScreen, setIsLgScreen] = useState(false);
+
+  useEffect(() => {
+    function checkScreenSize() {
+      if (window.innerWidth >= 992) {
+        setIsLgScreen(true); // If screen size is large (lg)
+      } else {
+        setIsLgScreen(false); // If screen size is small (sm) or default
+      }
+    }
+
+    checkScreenSize();
+
+    // Add event listener to monitor screen size changes
+    window.addEventListener('resize', checkScreenSize);
+
+    // Cleanup: remove event listener when component is unmounted
+    return () => {
+      window.removeEventListener('resize', checkScreenSize);
+    };
+  }, []);
+  return(
+    isLgScreen&&(
+      <Sidebar>
+      <SidebarItem url='/' icon={<GoHome size={28} color={mode?'white':'black'}/>} text="Beranda" active/>
+      <SidebarItem url='' icon={<CiImageOn size={28} color={mode?'white':'black'}/>} text="Album"/>
+      <SidebarItem url='/notif' icon={<IoMdNotificationsOutline size={28} color={mode?'white':'black'}/>} text="Notifikasi" alert/>
+      <SidebarItem url='' icon={<LuUser2 size={28} color={mode?'white':'black'}/>} text="User"/>
+      <SidebarItem url='' icon={<FiMenu size={28} color={mode?'white':'black'}/>} text="Lainnya"/>
+    </Sidebar>
+      )
+  )
+}
+
+export default SideBarCom
 
 interface SidebarProps {
     children: ReactNode;
@@ -9,7 +59,7 @@ interface SidebarProps {
 
 const SidebarContext = createContext<any>(true);
 
-export const Sidebar = ({ children }: SidebarProps) => {
+const Sidebar = ({ children }: SidebarProps) => {
     const[expanded,setExpanded] = useState(true)
     return(
         <aside className="h-dvh pt-1 bg-white dark:bg-darkBg ">
@@ -43,10 +93,11 @@ export const Sidebar = ({ children }: SidebarProps) => {
     )
 }
 
-export function SidebarItem({ icon, text, active, alert }: { icon?: any; text?: any; active?: any ; alert?:any }) {
+function SidebarItem({ icon, text, active, alert,url }: { icon?: any; text?: any; active?: any ; alert?:boolean; url : string; }) {
   const { expanded } = useContext(SidebarContext)
   
   return (
+    <Link href={url}>
     <li
       className={`
         relative flex items-center py-2 px-3 my-1
@@ -88,5 +139,6 @@ export function SidebarItem({ icon, text, active, alert }: { icon?: any; text?: 
         </div>
       )}
     </li>
+    </Link>
   )
 }

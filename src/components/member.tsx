@@ -1,5 +1,7 @@
+"use client";
+
 import { useEffect, useState } from 'react';
-import userPic from '../icons/1.png'
+import userPic from '@/assets/icons/1.png'
 import Image from 'next/image';
 
 

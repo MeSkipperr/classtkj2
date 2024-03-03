@@ -1,4 +1,8 @@
-const HeroSection = ({ mode }: { mode?:Boolean })=>{
+"use client";
+
+import CheckMode from '@/function/globalState'
+const HeroSection = ()=>{
+    const { mode } = CheckMode();
     
     return(
         <div className=" bg-white w-full h-full relative flex dark:bg-darkBg">
