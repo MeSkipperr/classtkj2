@@ -2,14 +2,14 @@ import HeroSection from '@/components/hero';
 import Member from '@/components/member';
 import Footer from '@/components/footer';
 
-import Tkj2Layout from '@/layout/tkj2layout';
+import TkjLayout from '@/layout/tkjLayout';
 
 export default function Home() {
   return (
-      <Tkj2Layout>
+      <TkjLayout>
         <HeroSection />
         <Member/>
         <Footer/>
-      </Tkj2Layout>
+      </TkjLayout>
   );
 }
