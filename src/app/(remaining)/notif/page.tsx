@@ -1,7 +1,6 @@
 "use client"
 import CheckLogin from "@/function/checkLogin"
 import NoUser from "@/components/noUser";
-import TkjLayout from "@/layout/tkjLayout";
 import { useState } from "react";
 import { FaCheck } from "react-icons/fa6";
 
@@ -35,19 +34,19 @@ const Notifikasi = ()=>{
     const sortedData = data.sort((a, b) => (a.checked === b.checked ? 0 : a.checked ? 1 : -1));
 
     return(
-        <TkjLayout>
-            {login?
-            <div className="w-full h-dvh dark:bg-darkBg mt-28 px-4 ">
-                <p className="text-third text-lg pb-6">Notifikasi</p>
-                <ul className="gap-4 flex flex-col">
-                {sortedData.map((notif, index) => (
-                    <NotifikasiContent key={index} content={notif} />
-                ))}
-                </ul>
-            </div>
-            :
-            <NoUser/>}
-        </TkjLayout>
+            <>  
+                {login?
+                <div className="w-full h-dvh dark:bg-darkBg mt-28 px-4 ">
+                    <p className="text-third text-lg pb-6">Notifikasi</p>
+                    <ul className="gap-4 flex flex-col">
+                    {sortedData.map((notif, index) => (
+                        <NotifikasiContent key={index} content={notif} />
+                        ))}
+                    </ul>
+                </div>
+                :
+                <NoUser/>}
+            </>
         
     )
 }
