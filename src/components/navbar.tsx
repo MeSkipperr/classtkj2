@@ -6,6 +6,8 @@ import { IoMdNotificationsOutline } from "react-icons/io";
 import { LuUser2 } from "react-icons/lu";
 import { FiMenu } from "react-icons/fi";
 
+import Link from 'next/link';
+
 const Navbar  = () => {
 
     return (
@@ -24,21 +26,21 @@ const Navbar  = () => {
             </nav>
             {/* buttom navbar */}
             <div className="lg:hidden fixed bottom-0 flex justify-around items-center z-50 w-full h-20 bg-white dark:bg-darkBg">
-                <a href="">
+                <Link href="/">
                     <GoHome size={35}                   className=' dark:text-white'/>
-                </a>
-                <a href="">
+                </Link>
+                <Link href="/album">
                     <CiImageOn size={35}                className=' dark:text-white'/>
-                </a>
-                <a href="">
+                </Link>
+                <Link href="/notif">
                     <IoMdNotificationsOutline size={35} className=' dark:text-white'/>
-                </a>
-                <a href="">
+                </Link>
+                <Link href="/user">
                     <LuUser2 size={35}                  className=' dark:text-white'/>
-                </a>
-                <a href="">
+                </Link>
+                <Link href="/lainnya">
                     <FiMenu size={35}                   className=' dark:text-white'/>
-                </a>
+                </Link>
             </div>
         </>
     );

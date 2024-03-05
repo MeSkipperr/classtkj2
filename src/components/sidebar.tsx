@@ -14,6 +14,8 @@ import { FiMenu } from "react-icons/fi";
 import CheckMode from '@/function/globalState'
 import Link from 'next/link';
 
+import { usePathname } from 'next/navigation'
+
 const SideBarCom = ()=>{
   const { mode } = CheckMode();
 
@@ -38,20 +40,49 @@ const SideBarCom = ()=>{
       window.removeEventListener('resize', checkScreenSize);
     };
   }, []);
+
+  const pathname = usePathname()
+
   return(
     isLgScreen&&(
       <Sidebar>
-      <SidebarItem url='/' icon={<GoHome size={28} color={mode?'white':'black'}/>} text="Beranda" active/>
-      <SidebarItem url='' icon={<CiImageOn size={28} color={mode?'white':'black'}/>} text="Album"/>
-      <SidebarItem url='/notif' icon={<IoMdNotificationsOutline size={28} color={mode?'white':'black'}/>} text="Notifikasi" alert/>
-      <SidebarItem url='' icon={<LuUser2 size={28} color={mode?'white':'black'}/>} text="User"/>
-      <SidebarItem url='' icon={<FiMenu size={28} color={mode?'white':'black'}/>} text="Lainnya"/>
+        <SidebarItem
+          url="/"
+          icon={<GoHome size={28} color={mode ? 'white' : 'black'} />}
+          text="Beranda"
+          active={pathname === '/'}
+        />
+        <SidebarItem
+          url="/album"
+          icon={<CiImageOn size={28} color={mode ? 'white' : 'black'} />}
+          text="Album"
+          active={pathname === '/album'}
+        />
+        <SidebarItem
+          url="/notif"
+          icon={<IoMdNotificationsOutline size={28} color={mode ? 'white' : 'black'} />}
+          text="Notifikasi"
+          alert
+          active={pathname === '/notif'}
+        />
+        <SidebarItem
+          url="/user"
+          icon={<LuUser2 size={28} color={mode ? 'white' : 'black'} />}
+          text="User"
+          active={pathname === '/user'}
+        />
+        <SidebarItem
+          url="/lainnya"
+          icon={<FiMenu size={28} color={mode ? 'white' : 'black'} />}
+          text="Lainnya"
+          active={pathname === '/lainnya'}
+        />
     </Sidebar>
       )
   )
 }
 
-export default SideBarCom
+export default SideBarCom;
 
 interface SidebarProps {
     children: ReactNode;
