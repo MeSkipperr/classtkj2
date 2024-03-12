@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 
-const CheckMode = () => {
+export const CheckMode = () => {
     const [mode, setMode] = useState<boolean>(false); // State for managing mode (not clear what mode represents)
     const [modeCheck, setModeCheck] = useState<boolean>(false);
 
@@ -32,4 +32,11 @@ const CheckMode = () => {
     return { mode, setMode }
 }
 
-export default CheckMode
+
+export const ServerUrl = () => {
+    const server = 'http://localhost:8080/'
+    
+    return server;
+}
+
+// export default CheckMode;

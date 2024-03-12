@@ -4,7 +4,7 @@ import FooterBG from '@/assets/lightFooter.svg';
 import FooterBGDark from '@/assets/darkFooter.svg';
 import Image from 'next/image';
 
-import CheckMode from '@/function/globalState'
+import {CheckMode} from '@/function/globalState'
 
 const Footer = ()=>{
     const { mode } = CheckMode();

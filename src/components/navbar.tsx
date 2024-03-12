@@ -22,6 +22,7 @@ const Navbar  = () => {
                 className='mr-4'
                 width={35}
                 height={25}
+                title='SMKN 1 Kuta Selatan, Badung'
                 />
             </nav>
             {/* buttom navbar */}

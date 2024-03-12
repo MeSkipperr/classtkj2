@@ -5,9 +5,9 @@ import { useState } from "react";
 import { FaCheck } from "react-icons/fa6";
 
 
-const Notifikasi = ()=>{
-    const {login} = CheckLogin();
-
+const Notif = ()=>{
+    const {login,User} = CheckLogin();
+    
     const data =[
         {
             judul : 'Membuat Website',
@@ -51,7 +51,7 @@ const Notifikasi = ()=>{
     )
 }
 
-export default Notifikasi
+export default Notif
 
 interface NotifikasiItem {
     judul: string;

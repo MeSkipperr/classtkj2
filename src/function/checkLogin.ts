@@ -1,7 +1,6 @@
 const CheckLogin = ()=>{
     const login = true;
-
-    return {login}
+    const User = 'yola'
+    return {login,User}
 }
-
-export default CheckLogin
+export default CheckLogin;
