@@ -11,7 +11,7 @@ import { IoMdNotificationsOutline } from "react-icons/io";
 import { LuUser2 } from "react-icons/lu";
 import { FiMenu } from "react-icons/fi";
 
-import CheckMode from '@/function/globalState'
+import {CheckMode} from '@/function/globalState'
 import Link from 'next/link';
 
 import { usePathname } from 'next/navigation'

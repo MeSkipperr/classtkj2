@@ -1,11 +1,18 @@
 "use client"
 import CheckLogin from "@/function/checkLogin"
-import NoUser from "@/components/noUser";
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { FaCheck } from "react-icons/fa6";
 
+import { getSessionLogin } from "@/lib";
 
-const Notifikasi = ()=>{
+const getDataCooc = () => {
+    return getSessionLogin().then((session) => {
+        const userName = session.user.auth;
+        return userName;
+    });
+    };
+
+const Notifikasi =  ()=>{
     const {login} = CheckLogin();
 
     const data =[
@@ -31,23 +38,25 @@ const Notifikasi = ()=>{
         },
     ]
 
-    const sortedData = data.sort((a, b) => (a.checked === b.checked ? 0 : a.checked ? 1 : -1));
+    const [userName, setUserName] = useState("");
 
+    useEffect(() => {
+      getDataCooc().then((name) => {
+        setUserName(name);
+      });
+    }, []);
+
+    const sortedData = data.sort((a, b) => (a.checked === b.checked ? 0 : a.checked ? 1 : -1));
     return(
-            <>  
-                {login?
-                <div className="w-full h-dvh dark:bg-darkBg mt-28 px-4 ">
-                    <p className="text-third text-lg pb-6">Notifikasi</p>
-                    <ul className="gap-4 flex flex-col">
-                    {sortedData.map((notif, index) => (
-                        <NotifikasiContent key={index} content={notif} />
-                        ))}
-                    </ul>
-                </div>
-                :
-                <NoUser/>}
-            </>
-        
+        <div className="w-full h-dvh dark:bg-darkBg mt-28 px-4 ">
+            <p className="text-third text-lg pb-6">Notifikasi</p>
+            <p className=" text-second">{userName}</p>
+            <ul className="gap-4 flex flex-col">
+            {sortedData.map((notif, index) => (
+                <NotifikasiContent key={index} content={notif} />
+                ))}
+            </ul>
+        </div>        
     )
 }
 
@@ -59,7 +68,7 @@ interface NotifikasiItem {
     tanggal:string;
 }
 
-const NotifikasiContent = ({ content }: { content: NotifikasiItem}) => {
+const NotifikasiContent =  ({ content }: { content: NotifikasiItem}) => {
     const [checkIcon,setCheckIcon] = useState(content.checked)
     const clickCheckBox =()=>{
         setCheckIcon(!checkIcon)
