@@ -32,9 +32,3 @@ export const CheckMode = () => {
     return { mode, setMode }
 }
 
-
-export const ServerUrl = () => {
-    const server = 'http://localhost:8080/'
-    
-    return server;
-}

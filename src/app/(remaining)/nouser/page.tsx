@@ -7,7 +7,7 @@ const NoUser  = ()=>{
             <FaUserAltSlash className=" dark:fill-white w-52 h-20 sm:h-28" />
             <p className="dark:text-white sm:text-2xl">Masuk dengan user TKJ 2 untuk akses.</p>
             <Link href="/login" className=" underline text-second sm:text-2xl">
-                Login
+                Masuk
             </Link>
         </div>
     )

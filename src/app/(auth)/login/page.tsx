@@ -1,5 +1,5 @@
 "use client"
-import {CheckMode,ServerUrl} from '@/function/globalState'
+import {CheckMode} from '@/function/globalState'
 import Image from 'next/image';
 import smkIcon from '@/assets/icons/smkn1kutaselatan.png'
 import Link from 'next/link';
@@ -12,7 +12,7 @@ import { login } from '@/lib';
 const Login = () => {
     const router = useRouter();
     const { mode } = CheckMode();
-    const serverUrl = ServerUrl();
+    const serverUrl = process.env.NEXT_PUBLIC_API_SERVER_URL;
 
     const [seePassword, setSeePassword] = useState(false);
     const [response, setResponse] = useState();

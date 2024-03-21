@@ -1,5 +1,4 @@
 "use client"
-import CheckLogin from "@/function/checkLogin"
 import { useState,useEffect } from "react";
 import { FaCheck } from "react-icons/fa6";
 
@@ -10,10 +9,11 @@ const getDataCooc = () => {
         const userName = session.user.auth;
         return userName;
     });
-    };
+};
 
 const Notifikasi =  ()=>{
-    const {login} = CheckLogin();
+
+
 
     const data =[
         {
@@ -46,14 +46,17 @@ const Notifikasi =  ()=>{
       });
     }, []);
 
+
+
+
     const sortedData = data.sort((a, b) => (a.checked === b.checked ? 0 : a.checked ? 1 : -1));
     return(
         <div className="w-full h-dvh dark:bg-darkBg mt-28 px-4 ">
             <p className="text-third text-lg pb-6">Notifikasi</p>
             <p className=" text-second">{userName}</p>
             <ul className="gap-4 flex flex-col">
-            {sortedData.map((notif, index) => (
-                <NotifikasiContent key={index} content={notif} />
+                {sortedData.map((notif, index) => (
+                    <NotifikasiContent key={index} content={notif} />
                 ))}
             </ul>
         </div>        
@@ -73,12 +76,12 @@ const NotifikasiContent =  ({ content }: { content: NotifikasiItem}) => {
     const clickCheckBox =()=>{
         setCheckIcon(!checkIcon)
         //TODO 
-        // send data to database
+        // send data to database    
     }
 
 
     return(
-        <li className={`flex border-b pb-2 ${checkIcon && 'opacity-30'}`}>
+        <li className={`flex border-b pb-2  ${checkIcon && 'opacity-30'}`}>
             <div className="pr-4 pt-2">
                 <div className="w-6 sm:w-10 aspect-square border rounded-sm flex  justify-center items-center cursor-pointer" onClick={clickCheckBox}>
                     {
