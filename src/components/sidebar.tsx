@@ -11,10 +11,11 @@ import { IoMdNotificationsOutline } from "react-icons/io";
 import { LuUser2 } from "react-icons/lu";
 import { FiMenu } from "react-icons/fi";
 
-import CheckMode from '@/function/globalState'
+import {CheckMode} from '@/function/globalState'
 import Link from 'next/link';
 
 import { usePathname } from 'next/navigation'
+import { getSessionLogin } from '@/lib';
 
 const SideBarCom = ()=>{
   const { mode } = CheckMode();
@@ -90,8 +91,36 @@ interface SidebarProps {
 
 const SidebarContext = createContext<any>(true);
 
+const getDataSession = () => {
+  return getSessionLogin().then((session) => {
+    if (session && session.user) {
+      const userData = {
+        userName: session.user.userName || '',
+        email: session.user.email || '',
+      };
+      return userData;
+    } else {
+      return {
+        userName: '',
+        email: '',
+      };
+    }
+  });
+};
+
 const Sidebar = ({ children }: SidebarProps) => {
-    const[expanded,setExpanded] = useState(true)
+    const[expanded,setExpanded] = useState(true);
+    const [userName, setUserName] = useState("");
+    const [userEmail, setUserEmail] = useState("");
+
+    useEffect(() => {
+      getDataSession().then((name) => {
+        setUserName(name.userName);
+        setUserEmail(name.email);
+      });
+    }, []);
+
+    getSessionLogin
     return(
         <aside className="h-dvh pt-1 bg-white dark:bg-darkBg ">
             <nav className="h-full flex flex-col  shadow-sm">
@@ -114,8 +143,8 @@ const Sidebar = ({ children }: SidebarProps) => {
                   ${expanded?'w-64 ml-3': 'w-0'}
                   `}>
                       <div className="leading-4">
-                          <h4 className='font-semibold text-xl dark:text-white'>I Kadek Yola Andika</h4>
-                          <span className=' text-base text-gray-600 dark:text-white'>ikadekyolaandika02@gmail.com</span>
+                          <h4 className='font-semibold text-xl dark:text-white'>{userName}</h4>
+                          <span className=' text-base text-gray-600 dark:text-white'>{userEmail}</span>
                       </div>
                   </div>
                 </div>

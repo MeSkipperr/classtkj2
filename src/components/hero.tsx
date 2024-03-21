@@ -1,6 +1,6 @@
 "use client";
 
-import CheckMode from '@/function/globalState'
+import {CheckMode} from '@/function/globalState'
 const HeroSection = ()=>{
     const { mode } = CheckMode();
     
