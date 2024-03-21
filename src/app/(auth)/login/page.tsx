@@ -23,8 +23,9 @@ const Login = () => {
     };
 
     const [userData, setUserData] = useState({
-        userName:'',
-        password:''
+        inputName:'',
+        inputEmail:'',
+        inputPassword:''
     });
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>, key: string) => {
@@ -69,14 +70,19 @@ const Login = () => {
                 <form className='flex flex-col pt-8 px-3 gap-2 sm:gap-4' onSubmit={handleSubmit}>
                     <label htmlFor="user_nama" className='dark:text-white sm:text-2xl'>Nama</label>
                     <input type="text" name="user_nama" id="user_nama" className=' bg-transparent dark:text-white border-b-2  h-10 outline-none sm:text-2xl sm:h-16' required 
-                        value={userData.userName} 
-                        onChange={(e) => handleChange(e, 'userName')}
+                        value={userData.inputName} 
+                        onChange={(e) => handleChange(e, 'inputName')}
+                    />
+                    <label htmlFor="user_email" className='dark:text-white sm:text-2xl'>Email</label>
+                    <input type="email" name="user_email" id="user_email" className=' bg-transparent dark:text-white border-b-2  h-10 outline-none sm:text-2xl sm:h-16' required 
+                        value={userData.inputEmail} 
+                        onChange={(e) => handleChange(e, 'inputEmail')}
                     />
                     <label htmlFor="user_password" className='dark:text-white sm:text-2xl' >Password</label>
                     <div className="flex">
                         <input type={seePassword ? 'text': 'password'} name="user_password" id="user_password" className='flex-grow bg-transparent dark:text-white border-b-2 h-10 outline-none sm:text-2xl sm:h-16' required 
-                            value={userData.password} 
-                            onChange={(e) => handleChange(e, 'password')}
+                            value={userData.inputPassword} 
+                            onChange={(e) => handleChange(e, 'inputPassword')}
                         />
                         <div onClick={changeSeePassword} className='flex justify-center items-center w-14 sm:w-20'>
                             {seePassword? <FaRegEyeSlash className='dark:fill-white h-6 sm:h-8 w-full cursor-pointer'/> : <FaRegEye className=' dark:fill-white h-6 sm:h-8 w-full cursor-pointer'/>}
