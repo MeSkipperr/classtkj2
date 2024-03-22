@@ -1,18 +1,21 @@
 "use client"
 import { useState,useEffect } from "react";
 import { FaCheck } from "react-icons/fa6";
-
+import axios from "axios";
 import { getSessionLogin } from "@/lib";
 
 const getDataCooc = () => {
     return getSessionLogin().then((session) => {
-        const userName = session.user.auth;
+        const userName = session.user.userName;
         return userName;
     });
 };
 
 const Notifikasi =  ()=>{
-
+    const [isLoading, setIsLoading] = useState(true);
+    const serverUrl = process.env.NEXT_PUBLIC_API_SERVER_URL;
+    const [homeWorkCompleted, setHomeWorkCompleted] = useState([]);
+    const [homeWorkIncomplete, sethomeWorkIncomplete] = useState([]);
 
 
     const data =[
@@ -41,23 +44,50 @@ const Notifikasi =  ()=>{
     const [userName, setUserName] = useState("");
 
     useEffect(() => {
-      getDataCooc().then((name) => {
-        setUserName(name);
-      });
+        getDataCooc().then((name) => {
+            setUserName(name);
+        });
     }, []);
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const res = await axios.get(serverUrl+`api/notif/${userName}`); 
+                console.log(res.data)
+                setHomeWorkCompleted(res.data.tasksCompleted)
+                sethomeWorkIncomplete(res.data.tasksIncomplete)
+                setIsLoading(false)
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+    
+        fetchData();
+    }, [serverUrl,userName]);
 
-
-
-
-    const sortedData = data.sort((a, b) => (a.checked === b.checked ? 0 : a.checked ? 1 : -1));
     return(
         <div className="w-full h-dvh dark:bg-darkBg mt-28 px-4 ">
             <p className="text-third text-lg pb-6">Notifikasi</p>
-            <p className=" text-second">{userName}</p>
             <ul className="gap-4 flex flex-col">
-                {sortedData.map((notif, index) => (
-                    <NotifikasiContent key={index} content={notif} />
-                ))}
+            {
+                isLoading ? (
+                    <>
+                    <SkeletonNotifikasi />
+                    <SkeletonNotifikasi />
+                    <SkeletonNotifikasi />
+                    <SkeletonNotifikasi />
+                    <SkeletonNotifikasi />
+                    </>
+                ) : (
+                    <>
+                    {homeWorkIncomplete.map((notif, index) => (
+                        <NotifikasiContent key={index} content={notif} checked={false} />
+                    ))}
+                    {homeWorkCompleted.map((notif, index) => (
+                        <NotifikasiContent key={index} content={notif} checked={true} />
+                    ))}
+                    </>
+                )
+            }
             </ul>
         </div>        
     )
@@ -67,12 +97,11 @@ export default Notifikasi
 
 interface NotifikasiItem {
     judul: string;
-    checked: boolean;
     tanggal:string;
 }
 
-const NotifikasiContent =  ({ content }: { content: NotifikasiItem}) => {
-    const [checkIcon,setCheckIcon] = useState(content.checked)
+const NotifikasiContent =  ({ content,checked }: { content: NotifikasiItem,checked:boolean}) => {
+    const [checkIcon,setCheckIcon] = useState(checked)
     const clickCheckBox =()=>{
         setCheckIcon(!checkIcon)
         //TODO 
@@ -81,7 +110,7 @@ const NotifikasiContent =  ({ content }: { content: NotifikasiItem}) => {
 
 
     return(
-        <li className={`flex border-b pb-2  ${checkIcon && 'opacity-30'}`}>
+        <li className={`flex pb-2  ${checkIcon && 'opacity-30'}`}>
             <div className="pr-4 pt-2">
                 <div className="w-6 sm:w-10 aspect-square border rounded-sm flex  justify-center items-center cursor-pointer" onClick={clickCheckBox}>
                     {
@@ -101,3 +130,21 @@ const NotifikasiContent =  ({ content }: { content: NotifikasiItem}) => {
         </li>
     )
 }
+
+const SkeletonNotifikasi = () => (
+    <li className="flex pb-2 ">
+    <div className="pr-4 pt-2">
+        <div className="w-6 sm:w-10 aspect-square border border-gray-500 opacity-15 rounded-sm flex justify-center items-center loading-skeleton">
+        </div>
+    </div>
+    <div className="w-full dark:text-white flex flex-col gap-2 loading-skeleton">
+        <div className="flex w-full justify-between sm:text-xl ">
+            <div className=" w-16 h-4 rounded-lg bg-gray-500 opacity-15"></div>
+            <div className=" w-16 h-4 rounded-lg bg-gray-500 opacity-15"></div>
+        </div>
+        <div className=" w-3/4 h-4 rounded-lg bg-gray-500 opacity-15"></div>
+        <div className=" w-2/4 h-4 rounded-lg bg-gray-500 opacity-15"></div>
+        <div className=" w-1/4 h-4 rounded-lg bg-gray-500 opacity-15"></div>
+    </div>
+    </li>
+);    
