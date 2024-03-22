@@ -16,42 +16,17 @@ const Notifikasi =  ()=>{
     const serverUrl = process.env.NEXT_PUBLIC_API_SERVER_URL;
     const [homeWorkCompleted, setHomeWorkCompleted] = useState([]);
     const [homeWorkIncomplete, sethomeWorkIncomplete] = useState([]);
-
-
-    const data =[
-        {
-            judul : 'Membuat Website',
-            checked : false,
-            tanggal : '01-20-2020'
-        },
-        {
-            judul : 'Membuat Kopi',
-            checked : true,
-            tanggal : '02-20-2020'
-        },
-        {
-            judul : 'Membuat Kopi',
-            checked : false,
-            tanggal : '03-20-2020'
-        },
-        {
-            judul : 'Masak Air',
-            checked : true,
-            tanggal : '04-20-2020'
-        },
-    ]
-
     const [userName, setUserName] = useState("");
-
     useEffect(() => {
         getDataCooc().then((name) => {
             setUserName(name);
         });
     }, []);
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const res = await axios.get(serverUrl+`api/notif/${userName}`); 
+        if(userName.length !== 0){
+            const fetchData = async () => {
+                try {
+                    const res = await axios.get(serverUrl+`api/notif/${userName}`); 
                 console.log(res.data)
                 setHomeWorkCompleted(res.data.tasksCompleted)
                 sethomeWorkIncomplete(res.data.tasksIncomplete)
@@ -59,9 +34,10 @@ const Notifikasi =  ()=>{
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
-        };
-    
-        fetchData();
+            };
+            fetchData();
+        }   
+        
     }, [serverUrl,userName]);
 
     return(
@@ -98,12 +74,15 @@ export default Notifikasi
 interface NotifikasiItem {
     judul: string;
     tanggal:string;
+    notifID:number;
 }
 
 const NotifikasiContent =  ({ content,checked }: { content: NotifikasiItem,checked:boolean}) => {
     const [checkIcon,setCheckIcon] = useState(checked)
+    const dataID = content.notifID;
     const clickCheckBox =()=>{
         setCheckIcon(!checkIcon)
+        console.log(dataID)
         //TODO 
         // send data to database    
     }
