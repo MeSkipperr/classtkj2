@@ -72,14 +72,19 @@ const Notifikasi =  ()=>{
 export default Notifikasi
 
 interface NotifikasiItem {
-    judul: string;
-    tanggal:string;
+    homeworkTitle: string;
+    homeworkSub:string;
     notifID:number;
+    dateline:string;
+    mataPelajaran:string;
+    tanggal:Date
 }
 
 const NotifikasiContent =  ({ content,checked }: { content: NotifikasiItem,checked:boolean}) => {
     const [checkIcon,setCheckIcon] = useState(checked)
+    const givenDate = new Date(content.tanggal);
     const dataID = content.notifID;
+    const time = convertSecondsToTime(givenDate);
     const clickCheckBox =()=>{
         setCheckIcon(!checkIcon)
         console.log(dataID)
@@ -100,11 +105,12 @@ const NotifikasiContent =  ({ content,checked }: { content: NotifikasiItem,check
             </div>
             <div className={`w-full dark:text-white ${checkIcon && 'line-through'} `}>
                 <div className="flex w-full justify-between sm:text-xl">
-                    <p className="dark:text-white font-semibold">{content.judul}</p>
-                    <span className=" text-gray-500">{content.tanggal}</span>
+                    <p className="dark:text-white font-semibold">{content.homeworkTitle}</p>
+                    <span className=" text-gray-500">{time}</span>
                 </div>
-                <p className="text-sm sm:text-lg">Tugas membuat website dengan react js untuk perjualan kopi</p>
-                <p className="mt-2 text-sm sm:text-lg">Dikumpul pada kamis, 21-10-1010</p>
+                <p className="opacity-80 text-sm sm:text-lg">Mata Pelajaran : {content.mataPelajaran}</p>
+                <p className="opacity-80 text-sm sm:text-lg">{content.homeworkSub}</p>
+                <p className="mt-2 text-sm sm:text-lg">Dikumpul pada {content.dateline}</p>
             </div>
         </li>
     )
@@ -127,3 +133,26 @@ const SkeletonNotifikasi = () => (
     </div>
     </li>
 );    
+
+function convertSecondsToTime(date:any) {
+    const time = new Date();
+    const perbedaan = Math.abs(time.getTime() - date.getTime()) / 1000; // perbedaan dalam detik
+
+    const days = Math.floor(perbedaan / (3600 * 24)); // Calculate days
+    const remainingSeconds1 = perbedaan % (3600 * 24); // Calculate remaining seconds after converting to days
+    const hours = Math.floor(remainingSeconds1 / 3600); // Calculate hours from remaining seconds
+    const remainingSeconds2 = remainingSeconds1 % 3600; // Calculate remaining seconds after converting to hours
+    const minutes = Math.floor(remainingSeconds2 / 60); // Calculate minutes from remaining seconds
+
+    if (days > 0) {
+    if (days >= 30) return "Notification 30 days";
+    return `${days}hari`;
+    } else if (hours > 0) {
+    return `${hours}j`;
+    } else {
+    if (minutes < 30) {
+        return "Baru";
+    }
+    return "30m";
+    }
+}

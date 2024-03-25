@@ -1,9 +1,12 @@
 "use client"
 import React, { useState, ChangeEvent } from "react";
+import axios from "axios";
+import { Toaster, toast } from 'sonner'
 
 type SelectChangeEvent = ChangeEvent<HTMLSelectElement>;
 
 const NotifForm = () => {
+    const serverUrl = process.env.NEXT_PUBLIC_API_SERVER_URL;
     const [isLoading, setIsLoading] = useState(false);
     const [notifData, setNotifData] = useState({
         homeworkTitle: '',
@@ -20,10 +23,35 @@ const NotifForm = () => {
         setNotifData({ ...notifData, mataPelajaran: e.target.value });
     };
 
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsLoading(true);
+        try {
+            const res = await axios.post(serverUrl+'api/add/homework', notifData);
+            setIsLoading(false);
+
+            if(res.status === 200) {
+                toast.success('Data berhasil ditambahkan ke DataBase');
+                setNotifData({
+                    homeworkTitle: '',
+                    homeworkSub: '',
+                    mataPelajaran: '',
+                    dateline: ''
+                });
+            }
+
+        } catch (error) {
+            console.error(error);
+        }
+        setIsLoading(false);
+    };
+    
+
     return (
         <div className="dark:bg-darkBg w-full h-dvh flex flex-col justify-center items-center p-2">
+            <Toaster position="top-right" expand={false} richColors  />
             <div className="bg-[#ecececcc] dark:bg-[#101012cc] w-full rounded-sm px-2 py-8 lg:w-2/4 lg:px-8 lg:py-12 shadow-[0_3px_10px_rgb(0,0,0,0.2)] ">
-                <form action="" className="flex flex-col gap-2">
+                <form onSubmit={handleSubmit} className="flex flex-col gap-2">
                     <label htmlFor="homework_title" className="dark:text-white sm:text-2xl">
                         Judul Tugas
                     </label>
@@ -53,23 +81,27 @@ const NotifForm = () => {
                         className="cursor-pointer border-none outline-none py-3 text-lg rounded-sm sm:py-4 sm:text-xl"
                         value={notifData.mataPelajaran}
                         onChange={handleMataPelajaranChange}
+                        required
                     >
-                        <option value="" disabled>
+                        <option value="" disabled >
                             Mata Pelajaran
                         </option>
-                        <option value="bahasa_indonesia">Bahasa Indonesia</option>
-                        <option value="bahasa_inggris">Bahasa Inggris</option>
-                        <option value="bahasa_bali">Bahasa Bali</option>
-                        <option value="matematika">Matematika</option>
-                        <option value="sejarah">Sejarah</option>
-                        <option value="ppkn">PPKN</option>
-                        <option value="olahraga">Olahraga</option>
-                        <option value="agama_hindu">Agama Hindu</option>
-                        <option value="kk_pak_ibam">KK (Pak Ibam)</option>
-                        <option value="kk_pak_dharma">KK (Pak Dharma)</option>
-                        <option value="kk_pak_agung">KK (Pak Agung)</option>
-                        <option value="pkk">PKK</option>
-                        <option value="mpp">MPP</option>
+                        <option value="Bahasa Indonesia">Bahasa Indonesia</option>
+                        <option value="Bahasa Inggris">Bahasa Inggris</option>
+                        <option value="Bahasa Bali">Bahasa Bali</option>
+                        <option value="Matematika">Matematika</option>
+                        <option value="Sejarah">Sejarah</option>
+                        <option value="PPKN">PPKN</option>
+                        <option value="Olahraga">Olahraga</option>
+                        <option value="Agama Hindu">Agama Hindu</option>
+                        <option value="Agama Islam">Agama Hindu</option>
+                        <option value="Agama Kristen">Agama Hindu</option>
+                        <option value="KK Pak Ibam">KK (Pak Ibam)</option>
+                        <option value="KK Pak Dharma">KK (Pak Dharma)</option>
+                        <option value="KKPak Agung">KK (Pak Agung)</option>
+                        <option value="PKK">PKK</option>
+                        <option value="MPP">MPP</option>
+                        <option value="Lainnya">Lainnya</option>
                     </select>
                     <label htmlFor="homework_deadline" className="dark:text-white sm:text-2xl">
                         Tanggal dikumpul
@@ -79,6 +111,7 @@ const NotifForm = () => {
                         name="homework_deadline"
                         id="homework_deadline"
                         className="w-full"
+                        required
                         value={notifData.dateline}
                         onChange={(e) => handleChange(e, 'dateline')}
                     />
