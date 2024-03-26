@@ -80,16 +80,38 @@ interface NotifikasiItem {
     tanggal:Date
 }
 
+
 const NotifikasiContent =  ({ content,checked }: { content: NotifikasiItem,checked:boolean}) => {
+    const serverUrl = process.env.NEXT_PUBLIC_API_SERVER_URL;
     const [checkIcon,setCheckIcon] = useState(checked)
     const givenDate = new Date(content.tanggal);
     const dataID = content.notifID;
     const time = convertSecondsToTime(givenDate);
+    const [userName, setUserName] = useState('');
+
+    useEffect(() => {
+        getDataCooc().then((name) => {
+            setUserName(name);
+        });
+    }, []);
+
     const clickCheckBox =()=>{
+        const notificationData ={
+            homeworkDone:checkIcon,
+            username:userName,
+            notifId:dataID
+        }
+
+        const fetchData = async () => {
+            try {
+                const res = await axios.post(serverUrl+`api/update/homework`,notificationData); 
+                console.log(res.data)
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }   
+        };
+        fetchData();
         setCheckIcon(!checkIcon)
-        console.log(dataID)
-        //TODO 
-        // send data to database    
     }
 
 
