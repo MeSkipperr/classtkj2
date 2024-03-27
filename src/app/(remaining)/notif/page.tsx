@@ -3,6 +3,8 @@ import { useState,useEffect } from "react";
 import { FaCheck } from "react-icons/fa6";
 import axios from "axios";
 import { getSessionLogin } from "@/lib";
+import Link from "next/link";
+import { userAgent } from "next/server";
 
 const getDataCooc = () => {
     return getSessionLogin().then((session) => {
@@ -16,41 +18,24 @@ const Notifikasi =  ()=>{
     const serverUrl = process.env.NEXT_PUBLIC_API_SERVER_URL;
     const [homeWorkCompleted, setHomeWorkCompleted] = useState([]);
     const [homeWorkIncomplete, sethomeWorkIncomplete] = useState([]);
-
-
-    const data =[
-        {
-            judul : 'Membuat Website',
-            checked : false,
-            tanggal : '01-20-2020'
-        },
-        {
-            judul : 'Membuat Kopi',
-            checked : true,
-            tanggal : '02-20-2020'
-        },
-        {
-            judul : 'Membuat Kopi',
-            checked : false,
-            tanggal : '03-20-2020'
-        },
-        {
-            judul : 'Masak Air',
-            checked : true,
-            tanggal : '04-20-2020'
-        },
-    ]
-
     const [userName, setUserName] = useState("");
 
+    const [admin, setAdmin] = useState(false);
+    const [usersAdmin, setUsersAdmin] = useState(['admin']);
+    useEffect(() => {
+        if(usersAdmin.includes(userName)){
+            setAdmin(true)
+        }
+    }, [userName,usersAdmin]);
     useEffect(() => {
         getDataCooc().then((name) => {
             setUserName(name);
         });
     }, []);
     useEffect(() => {
-        const fetchData = async () => {
-            try {
+        if(userName.length !== 0){
+            const fetchData = async () => {
+                try {
                 const res = await axios.get(serverUrl+`api/notif/${userName}`); 
                 console.log(res.data)
                 setHomeWorkCompleted(res.data.tasksCompleted)
@@ -59,14 +44,24 @@ const Notifikasi =  ()=>{
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
-        };
-    
-        fetchData();
+            };
+            fetchData();
+        }   
+        
     }, [serverUrl,userName]);
 
     return(
-        <div className="w-full h-dvh dark:bg-darkBg mt-28 px-4 ">
-            <p className="text-third text-lg pb-6">Notifikasi</p>
+        <div className="w-full h-dvh dark:bg-darkBg mt-28 px-4">
+            <div className="w-full flex justify-between pb-3 items-center">
+                <p className="text-third text-lg">Notifikasi</p>
+                {admin ? 
+                <Link href='/notifForm'>
+                    <div className="text-white text-sm  bg-second px-2 py-1.5 rounded-sm sm:text-lg">Tambahkan Tugas</div>
+                </Link>
+                :
+                ''
+                }
+            </div>
             <ul className="gap-4 flex flex-col">
             {
                 isLoading ? (
@@ -96,16 +91,46 @@ const Notifikasi =  ()=>{
 export default Notifikasi
 
 interface NotifikasiItem {
-    judul: string;
-    tanggal:string;
+    homeworkTitle: string;
+    homeworkSub:string;
+    notifID:number;
+    dateline:string;
+    mataPelajaran:string;
+    tanggal:Date
 }
 
+
 const NotifikasiContent =  ({ content,checked }: { content: NotifikasiItem,checked:boolean}) => {
+    const serverUrl = process.env.NEXT_PUBLIC_API_SERVER_URL;
     const [checkIcon,setCheckIcon] = useState(checked)
+    const givenDate = new Date(content.tanggal);
+    const dataID = content.notifID;
+    const time = convertSecondsToTime(givenDate);
+    const [userName, setUserName] = useState('');
+
+    useEffect(() => {
+        getDataCooc().then((name) => {
+            setUserName(name);
+        });
+    }, []);
+
     const clickCheckBox =()=>{
+        const notificationData ={
+            homeworkDone:checkIcon,
+            username:userName,
+            notifId:dataID
+        }
+
+        const fetchData = async () => {
+            try {
+                const res = await axios.post(serverUrl+`api/update/homework`,notificationData); 
+                console.log(res.data)
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }   
+        };
+        fetchData();
         setCheckIcon(!checkIcon)
-        //TODO 
-        // send data to database    
     }
 
 
@@ -121,11 +146,12 @@ const NotifikasiContent =  ({ content,checked }: { content: NotifikasiItem,check
             </div>
             <div className={`w-full dark:text-white ${checkIcon && 'line-through'} `}>
                 <div className="flex w-full justify-between sm:text-xl">
-                    <p className="dark:text-white font-semibold">{content.judul}</p>
-                    <span className=" text-gray-500">{content.tanggal}</span>
+                    <p className="dark:text-white font-semibold">{content.homeworkTitle}</p>
+                    <span className=" text-gray-500">{time}</span>
                 </div>
-                <p className="text-sm sm:text-lg">Tugas membuat website dengan react js untuk perjualan kopi</p>
-                <p className="mt-2 text-sm sm:text-lg">Dikumpul pada kamis, 21-10-1010</p>
+                <p className="opacity-80 text-sm sm:text-lg">Mata Pelajaran : {content.mataPelajaran}</p>
+                <p className="opacity-80 text-sm sm:text-lg">{content.homeworkSub}</p>
+                <p className="mt-2 text-sm sm:text-lg">Dikumpul pada {content.dateline}</p>
             </div>
         </li>
     )
@@ -148,3 +174,26 @@ const SkeletonNotifikasi = () => (
     </div>
     </li>
 );    
+
+function convertSecondsToTime(date:any) {
+    const time = new Date();
+    const perbedaan = Math.abs(time.getTime() - date.getTime()) / 1000; // perbedaan dalam detik
+
+    const days = Math.floor(perbedaan / (3600 * 24)); // Calculate days
+    const remainingSeconds1 = perbedaan % (3600 * 24); // Calculate remaining seconds after converting to days
+    const hours = Math.floor(remainingSeconds1 / 3600); // Calculate hours from remaining seconds
+    const remainingSeconds2 = remainingSeconds1 % 3600; // Calculate remaining seconds after converting to hours
+    const minutes = Math.floor(remainingSeconds2 / 60); // Calculate minutes from remaining seconds
+
+    if (days > 0) {
+    if (days >= 30) return "30hari";
+    return `${days}hari`;
+    } else if (hours > 0) {
+    return `${hours}j`;
+    } else {
+    if (minutes < 30) {
+        return "Baru";
+    }
+    return "30m";
+    }
+}

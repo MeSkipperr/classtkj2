@@ -1,3 +1,4 @@
+"use client"
 import smkIcon from '@/assets/icons/smkn1kutaselatan.png'
 import Image from 'next/image';
 import { GoHome } from "react-icons/go";
@@ -7,8 +8,39 @@ import { LuUser2 } from "react-icons/lu";
 import { FiMenu } from "react-icons/fi";
 
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { getSessionLogin } from '@/lib';
+import axios from 'axios';
+
+const getDataCooc = () => {
+    return getSessionLogin().then((session) => {
+        const userName = session.user.userName;
+        return userName;
+    });
+  };
+  
 
 const Navbar  = () => {
+    const [userName, setUserName] = useState("");
+    const [notification, setNotification] = useState(false);
+    const serverUrl = process.env.NEXT_PUBLIC_API_SERVER_URL;
+
+    useEffect(() => {
+        getDataCooc().then((name) => {
+            setUserName(name);
+        });
+    }, []);
+    useEffect(() => {
+        const fetchData = async () => {
+          try {
+            const res = await axios.get(serverUrl+`api/notifcount/${userName}`,); 
+            setNotification(res.data)
+          } catch (error) {
+            console.log(error)
+          }
+        }
+        fetchData()
+      }, [serverUrl,userName]);
 
     return (
         <>
@@ -33,7 +65,12 @@ const Navbar  = () => {
                     <CiImageOn size={35}                className=' dark:text-white'/>
                 </Link>
                 <Link href="/notif">
+                    <div className="relative">
+                    {!notification&&
+                        <span className='absolute right-2 w-2 h-2 rounded bg-[red]'></span>
+                    }
                     <IoMdNotificationsOutline size={35} className=' dark:text-white'/>
+                    </div>
                 </Link>
                 <Link href="/user">
                     <LuUser2 size={35}                  className=' dark:text-white'/>
