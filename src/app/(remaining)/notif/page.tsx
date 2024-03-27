@@ -3,6 +3,8 @@ import { useState,useEffect } from "react";
 import { FaCheck } from "react-icons/fa6";
 import axios from "axios";
 import { getSessionLogin } from "@/lib";
+import Link from "next/link";
+import { userAgent } from "next/server";
 
 const getDataCooc = () => {
     return getSessionLogin().then((session) => {
@@ -17,6 +19,14 @@ const Notifikasi =  ()=>{
     const [homeWorkCompleted, setHomeWorkCompleted] = useState([]);
     const [homeWorkIncomplete, sethomeWorkIncomplete] = useState([]);
     const [userName, setUserName] = useState("");
+
+    const [admin, setAdmin] = useState(false);
+    const [usersAdmin, setUsersAdmin] = useState(['admin']);
+    useEffect(() => {
+        if(usersAdmin.includes(userName)){
+            setAdmin(true)
+        }
+    }, [userName,usersAdmin]);
     useEffect(() => {
         getDataCooc().then((name) => {
             setUserName(name);
@@ -26,7 +36,7 @@ const Notifikasi =  ()=>{
         if(userName.length !== 0){
             const fetchData = async () => {
                 try {
-                    const res = await axios.get(serverUrl+`api/notif/${userName}`); 
+                const res = await axios.get(serverUrl+`api/notif/${userName}`); 
                 console.log(res.data)
                 setHomeWorkCompleted(res.data.tasksCompleted)
                 sethomeWorkIncomplete(res.data.tasksIncomplete)
@@ -41,8 +51,17 @@ const Notifikasi =  ()=>{
     }, [serverUrl,userName]);
 
     return(
-        <div className="w-full h-dvh dark:bg-darkBg mt-28 px-4 ">
-            <p className="text-third text-lg pb-6">Notifikasi</p>
+        <div className="w-full h-dvh dark:bg-darkBg mt-28 px-4">
+            <div className="w-full flex justify-between pb-3 items-center">
+                <p className="text-third text-lg">Notifikasi</p>
+                {admin ? 
+                <Link href='/notifForm'>
+                    <div className="text-white text-sm  bg-second px-2 py-1.5 rounded-sm sm:text-lg">Tambahkan Tugas</div>
+                </Link>
+                :
+                ''
+                }
+            </div>
             <ul className="gap-4 flex flex-col">
             {
                 isLoading ? (
@@ -167,7 +186,7 @@ function convertSecondsToTime(date:any) {
     const minutes = Math.floor(remainingSeconds2 / 60); // Calculate minutes from remaining seconds
 
     if (days > 0) {
-    if (days >= 30) return "Notification 30 days";
+    if (days >= 30) return "30hari";
     return `${days}hari`;
     } else if (hours > 0) {
     return `${hours}j`;

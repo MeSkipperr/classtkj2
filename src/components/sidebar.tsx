@@ -13,14 +13,25 @@ import { FiMenu } from "react-icons/fi";
 
 import {CheckMode} from '@/function/globalState'
 import Link from 'next/link';
+import axios from 'axios';
 
 import { usePathname } from 'next/navigation'
 import { getSessionLogin } from '@/lib';
 
+const getDataCooc = () => {
+  return getSessionLogin().then((session) => {
+      const userName = session.user.userName;
+      return userName;
+  });
+};
+
 const SideBarCom = ()=>{
   const { mode } = CheckMode();
-
+  const serverUrl = process.env.NEXT_PUBLIC_API_SERVER_URL;
+  
   const [isLgScreen, setIsLgScreen] = useState(false);
+  const [userName, setUserName] = useState("");
+  const [notification, setNotification] = useState(false);
 
   useEffect(() => {
     function checkScreenSize() {
@@ -41,6 +52,24 @@ const SideBarCom = ()=>{
       window.removeEventListener('resize', checkScreenSize);
     };
   }, []);
+
+  useEffect(() => {
+    getDataCooc().then((name) => {
+        setUserName(name);
+    });
+}, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await axios.get(serverUrl+`api/notifcount/${userName}`,); 
+        setNotification(res.data)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    fetchData()
+  }, [serverUrl,userName]);
 
   const pathname = usePathname()
 
@@ -63,7 +92,7 @@ const SideBarCom = ()=>{
           url="/notif"
           icon={<IoMdNotificationsOutline size={28} color={mode ? 'white' : 'black'} />}
           text="Notifikasi"
-          alert
+          alert={!notification}
           active={pathname === '/notif'}
         />
         <SidebarItem
