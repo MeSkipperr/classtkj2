@@ -31,16 +31,18 @@ const Navbar  = () => {
         });
     }, []);
     useEffect(() => {
+    if(userName !== ""){
         const fetchData = async () => {
-          try {
+        try {
             const res = await axios.get(serverUrl+`api/notifcount/${userName}`,); 
             setNotification(res.data)
-          } catch (error) {
+        } catch (error) {
             console.log(error)
-          }
+        }
         }
         fetchData()
-      }, [serverUrl,userName]);
+    }
+    }, [serverUrl,userName]);
 
     return (
         <>

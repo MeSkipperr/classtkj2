@@ -4,7 +4,6 @@ import { FaCheck } from "react-icons/fa6";
 import axios from "axios";
 import { getSessionLogin } from "@/lib";
 import Link from "next/link";
-import { userAgent } from "next/server";
 
 const getDataCooc = () => {
     return getSessionLogin().then((session) => {
@@ -51,7 +50,7 @@ const Notifikasi =  ()=>{
     }, [serverUrl,userName]);
 
     return(
-        <div className="w-full h-dvh dark:bg-darkBg mt-28 px-4">
+        <div className="w-full  dark:bg-darkBg mt-28 px-4 pb-28">
             <div className="w-full flex justify-between pb-3 items-center">
                 <p className="text-third text-lg">Notifikasi</p>
                 {admin ? 

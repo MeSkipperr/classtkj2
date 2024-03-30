@@ -57,18 +57,21 @@ const SideBarCom = ()=>{
     getDataCooc().then((name) => {
         setUserName(name);
     });
-}, []);
+  },[]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await axios.get(serverUrl+`api/notifcount/${userName}`,); 
-        setNotification(res.data)
+    if(userName !== ""){
+      const fetchData = async () => {
+        console.log(userName)
+        try {
+        const res = await axios.get(`${serverUrl}api/notifcount/${userName}`);
+        setNotification(res.data) 
       } catch (error) {
         console.log(error)
       }
     }
     fetchData()
+  }
   }, [serverUrl,userName]);
 
   const pathname = usePathname()
