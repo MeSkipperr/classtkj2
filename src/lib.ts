@@ -43,9 +43,22 @@ export async function login(authLogin:LoginSession) {
 export async function getSessionLogin() {
     const session = cookies().get('auth')?.value;
 
-
     if(!session)return null;
-    return await decrypt(session)
+    const decryptedSession = await decrypt(session);
+    if (!decryptedSession || !decryptedSession.user || !decryptedSession.user.userName || !decryptedSession.user.auth || !decryptedSession.user.email || !decryptedSession.expires || !decryptedSession.iat || !decryptedSession.exp) {
+        throw new Error('Invalid session data');
+    }
+    
+    const { user, expires, iat, exp } = decryptedSession;
+
+    return {
+        userName: user.userName,
+        auth: user.auth,
+        email: user.email,
+        expires,
+        iat,
+        exp
+    };
 }
 
 export async function logout() {

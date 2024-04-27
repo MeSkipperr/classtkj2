@@ -11,7 +11,7 @@ return(
     <Navbar/>
     <div className="flex w-full">
         <SideBarCom/>
-        <div className=" flex-grow h-dvh overflow-y-auto dark:bg-darkBg">
+        <div className=" flex-grow h-dvh overflow-y-auto dark:bg-darkBg relative">
             {children}
         </div>
     </div> 

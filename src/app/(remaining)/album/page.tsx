@@ -5,6 +5,7 @@ import { useRouter ,useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react';
 import { GoPlus } from "react-icons/go";
 import axios from 'axios';
+import MediaPlayer from './singleMedia';
 
 interface PostData {
     _id: string;
@@ -14,19 +15,21 @@ interface PostData {
     userPost: string;
     caption: string;
     like: number;
-    commet: {
+    comment: {
         userName: string;
         userComment: string;
     }[];
     hash:string;
 }
 
-const Album = () => {  
-    const serverUrl = process.env.NEXT_PUBLIC_API_SERVER_URL;
+const Album = () => {
+        const serverUrl = process.env.NEXT_PUBLIC_API_SERVER_URL;
 
     // const mediaParms = searchParams.get('media')
     const [showMedia, setShowMedia] = useState(false);
-    const [showMediaUrl, setShowMediaUrl] = useState('');
+    const [showMediaPlayer, setShowMediaPlayer] = useState({});
+    const router = useRouter();
+    const [isLoading, setIsLoading] = useState(true);
 
     const [postData, setPostData] = useState<PostData[]>([]);
 
@@ -35,6 +38,7 @@ const Album = () => {
             try {
             const res = await axios.get(serverUrl+`api/album/media`); 
             setPostData(res.data)
+            setIsLoading(false)
         } catch (error) {
             console.error('Error fetching data:', error);
         }
@@ -42,53 +46,71 @@ const Album = () => {
         fetchData();
     }, [serverUrl]);
 
+    const findPostByHash = (postData: PostData[], hashToFind: string): PostData | undefined => {
+        return postData.find(post => post.hash === hashToFind);
+    };
+
     const searchParams = useSearchParams();
     useEffect(() => {
         const mediaParms = searchParams.get('media');
-    
-        if(mediaParms){
-            setShowMedia(true);
-            setShowMediaUrl(mediaParms)
-        }
-    }, [searchParams]);
-    
-
-    return ( 
-        <div className="w-full h-dvh dark:bg-darkBg flex items-start flex-col px-4 gap-2 mt-28 mb-20 relative">
-            {showMedia &&
-                <div className="absolute inset-0 bg-white z-30">
-                    <p>{showMediaUrl}</p>
-                </div>
+        if(mediaParms&&postData.length !== 0){
+            const foundHash = findPostByHash(postData, mediaParms);
+            if(foundHash){
+                setShowMedia(true);
+                setShowMediaPlayer(foundHash);
+                console.log(foundHash)
+            }else{
+                router.push(`/album`);
             }
-            <p className="text-third text-lg">Album</p>
-            <div className="grid grid-cols-3 lg:grid-cols-5 gap-2 place-items-center w-full">
-                {postData.map((post, index) => {
-                    const videoExtensions = ['mp4', 'mov', 'avi'];
-
-                    const imageExtensions = ['jpg', 'jpeg', 'png', 'gif'];
-
-                    if (post.fileName && post.fileName !== "") {
-                        const fileExtension = post.fileName.split('.').pop()?.toLowerCase();
-                        if (fileExtension) {
-                            if (videoExtensions.includes(fileExtension)) {
-                                return <VideoPost key={index} fileName={post.fileName} hash={post.hash}/>;
-                            } else if (imageExtensions.includes(fileExtension)) {
-                                return <PhotoPost key={index} fileName={post.fileName} hash={post.hash} />;
-                            }
+        }
+    }, [searchParams,postData,router]);
+    return ( 
+    <>
+    {showMedia ?
+        <MediaPlayer data={showMediaPlayer} setShowMedia={setShowMedia}/>
+    :
+    <div className="w-full h-dvh dark:bg-darkBg flex items-start flex-col px-4 gap-2 mt-28 mb-20 lg:mb-0 relative">
+    <p className="text-third text-lg">Album</p>
+    {isLoading ? (
+        <div className="grid grid-cols-3 lg:grid-cols-5 gap-2 lg:gap-y-8 place-items-center w-full">
+            {[...Array(10)].map((_, index) => (
+                <AlbumSkelton key={index} />
+            ))}
+        </div>
+    ) : (
+        <div className="grid grid-cols-3 lg:grid-cols-5 gap-2 place-items-center w-full">
+            {postData.map((post, index) => {
+                const videoExtensions = ['mp4', 'mov', 'avi'];
+                const imageExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+                
+                if (post.fileName && post.fileName !== "") {
+                    const fileExtension = post.fileName.split('.').pop()?.toLowerCase();
+                    if (fileExtension) {
+                        if (videoExtensions.includes(fileExtension)) {
+                            return <VideoPost key={index} fileName={post.fileName} hash={post.hash} />;
+                        } else if (imageExtensions.includes(fileExtension)) {
+                            return <PhotoPost key={index} fileName={post.fileName} hash={post.hash} />;
                         }
                     }
-                    return <TweetPost key={index}  hash={post.hash} caption={post.caption} />;
-                })}
-            </div>
-            <div className="cursor-pointer fixed  size-12 sm:size-16 border-third border-2 sm:border-4  bottom-20 right-5 lg:right-8 lg:bottom-12 rounded-full flex justify-center items-center"><GoPlus className='size-8 sm:size-10 text-third' /></div>
+                }
+                return null; // Handle cases where no component is returned
+            })}
         </div>
+    )}
+    <div className="cursor-pointer fixed size-12 sm:size-16 border-third border-2 sm:border-4 bottom-20 right-5 lg:right-8 lg:bottom-12 rounded-full flex justify-center items-center">
+        <GoPlus className='size-8 sm:size-10 text-third' />
+    </div>
+</div>
+    }
+    </>
     );
 }
 
+export default Album;
+
 interface MediaInter {
-    fileName?:string
+    fileName:string
     hash:string
-    caption?:string
 }
 
 const PhotoPost = ({fileName,hash}:MediaInter)=>{
@@ -106,9 +128,18 @@ const PhotoPost = ({fileName,hash}:MediaInter)=>{
         router.push(`/album?${queryString}`);
 
     }
+    const src = `${serverUrl}api/media/${fileName}`;
     return(
         <div className="cursor-pointer size-28 sm:size-52 "  onClick={changeShow}>
-            <Image src={`${serverUrl}api/videos/${fileName}`} className='size-full object-cover rounded-sm'   alt=''/>
+            <Image
+                loader={() => src} src={src}
+                className="size-full object-cover rounded-sm"
+                alt={fileName}
+                width={300} // Set your desired width
+                height={200} // Set your desired height
+                unoptimized 
+                priority
+            />
         </div>
     )
 }
@@ -139,24 +170,10 @@ const VideoPost = ({fileName,hash}:MediaInter) => {
     )
 }
 
-const TweetPost =({hash,caption}:MediaInter)=>{
-    const router = useRouter();
+const AlbumSkelton = () =>{
+    return (
+        <div className="cursor-pointer size-28 sm:size-52 bg-gray-600 loading-skeleton opacity-5"  >
 
-    const hashIdTweet = hash;
-    const changeShow  = () =>{
-        const params = new URLSearchParams();
-        params.append('media', hashIdTweet);
-
-        const queryString = params.toString();
-        router.push(`/album?${queryString}`);
-    }
-
-    return ( 
-        <div className="cursor-pointer size-28 sm:size-52 relative z-10  overflow-hidden flex justify-center items-start " onClick={changeShow}>
-            <p className='dark:text-white text-sm sm:text-lg overflow-hidden'>{caption}</p>
         </div>
-    );
+        )
 }
-
-
-export default Album;

@@ -12,37 +12,46 @@ import { useEffect, useState } from 'react';
 import { getSessionLogin } from '@/lib';
 import axios from 'axios';
 
-const getDataCooc = () => {
-    return getSessionLogin().then((session) => {
-        const userName = session.user.userName;
-        return userName;
-    });
-  };
-  
+interface UserData {
+    userName: string;
+    auth: string;
+    email: string;
+    expires: number;
+    iat: number;
+    exp: number;
+}
 
 const Navbar  = () => {
-    const [userName, setUserName] = useState("");
     const [notification, setNotification] = useState(false);
     const serverUrl = process.env.NEXT_PUBLIC_API_SERVER_URL;
 
+    const [userData, setUserData] = useState<UserData | null>(null);
+
     useEffect(() => {
-        getDataCooc().then((name) => {
-            setUserName(name);
-        });
-    }, []);
-    useEffect(() => {
-    if(userName !== ""){
-        const fetchData = async () => {
+      const fetchData = async () => {
         try {
-            const res = await axios.get(serverUrl+`api/notifcount/${userName}`,); 
-            setNotification(res.data)
+          const sessionData = await getSessionLogin();
+          setUserData(sessionData);
         } catch (error) {
-            console.log(error)
+          console.error('Error fetching session data:', error);
         }
+      };
+  
+      fetchData();
+    }, []);
+
+    useEffect(() => {
+        if(!userData)return
+        const fetchData = async () => {
+          try {
+          const res = await axios.get(`${serverUrl}api/notifcount/${userData.userName}`);
+          setNotification(res.data) 
+        } catch (error) {
+          console.log(error)
         }
         fetchData()
-    }
-    }, [serverUrl,userName]);
+      }
+      }, [serverUrl,userData]);
 
     return (
         <>

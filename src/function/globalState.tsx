@@ -31,4 +31,3 @@ export const CheckMode = () => {
 
     return { mode, setMode }
 }
-

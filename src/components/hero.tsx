@@ -20,7 +20,7 @@ const HeroSection = ()=>{
                 <h1 className="z-10 text-second text-4xl sm:text-6xl">Teknik </h1>
                 <h1 className="z-10 text-second text-4xl sm:text-6xl">Komputer &</h1>
                 <h1 className="z-10 text-second text-4xl sm:text-6xl">Jaringan</h1>                
-                <p className="z-10 dark:text-white text-lg sm:text-3xl">Website resmi TKJ 2 SMKN 1 Kuta Selatan angkatan </p>
+                <p className="z-10 dark:text-white text-lg sm:text-3xl">Website resmi TKJ 2 SMKN 1 Kuta Selatan </p>
                 <a href="#member">
                 <button className="bg-third text-white mt-2 py-2 sm:mt-6 px-4 rounded-sm sm:text-3xl sm:px-8 sm:py-4 sm:rounded-md">Jelajahi</button>
                 </a>

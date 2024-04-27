@@ -18,20 +18,36 @@ import axios from 'axios';
 import { usePathname } from 'next/navigation'
 import { getSessionLogin } from '@/lib';
 
-const getDataCooc = () => {
-  return getSessionLogin().then((session) => {
-      const userName = session.user.userName;
-      return userName;
-  });
-};
+interface UserData {
+  userName: string;
+  auth: string;
+  email: string;
+  expires: number;
+  iat: number;
+  exp: number;
+}
 
 const SideBarCom = ()=>{
   const { mode } = CheckMode();
   const serverUrl = process.env.NEXT_PUBLIC_API_SERVER_URL;
   
   const [isLgScreen, setIsLgScreen] = useState(false);
-  const [userName, setUserName] = useState("");
   const [notification, setNotification] = useState(false);
+
+  const [userData, setUserData] = useState<UserData | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const sessionData = await getSessionLogin();
+        setUserData(sessionData);
+      } catch (error) {
+        console.error('Error fetching session data:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   useEffect(() => {
     function checkScreenSize() {
@@ -54,25 +70,17 @@ const SideBarCom = ()=>{
   }, []);
 
   useEffect(() => {
-    getDataCooc().then((name) => {
-        setUserName(name);
-    });
-  },[]);
-
-  useEffect(() => {
-    if(userName !== ""){
-      const fetchData = async () => {
-        console.log(userName)
-        try {
-        const res = await axios.get(`${serverUrl}api/notifcount/${userName}`);
-        setNotification(res.data) 
-      } catch (error) {
-        console.log(error)
-      }
+    if(!userData)return
+    const fetchData = async () => {
+      try {
+      const res = await axios.get(`${serverUrl}api/notifcount/${userData.userName}`);
+      setNotification(res.data) 
+    } catch (error) {
+      console.log(error)
     }
     fetchData()
   }
-  }, [serverUrl,userName]);
+  }, [serverUrl,userData]);
 
   const pathname = usePathname()
 
@@ -123,33 +131,24 @@ interface SidebarProps {
 
 const SidebarContext = createContext<any>(true);
 
-const getDataSession = () => {
-  return getSessionLogin().then((session) => {
-    if (session && session.user) {
-      const userData = {
-        userName: session.user.userName || '',
-        email: session.user.email || '',
-      };
-      return userData;
-    } else {
-      return {
-        userName: '',
-        email: '',
-      };
-    }
-  });
-};
-
 const Sidebar = ({ children }: SidebarProps) => {
     const[expanded,setExpanded] = useState(true);
     const [userName, setUserName] = useState("");
     const [userEmail, setUserEmail] = useState("");
 
+    const [userData, setUserData] = useState<UserData | null>(null);
+
     useEffect(() => {
-      getDataSession().then((name) => {
-        setUserName(name.userName);
-        setUserEmail(name.email);
-      });
+      const fetchData = async () => {
+        try {
+          const sessionData = await getSessionLogin();
+          setUserData(sessionData);
+        } catch (error) {
+          console.error('Error fetching session data:', error);
+        }
+      };
+  
+      fetchData();
     }, []);
 
     getSessionLogin
@@ -175,8 +174,8 @@ const Sidebar = ({ children }: SidebarProps) => {
                   ${expanded?'w-64 ml-3': 'w-0'}
                   `}>
                       <div className="leading-4">
-                          <h4 className='font-semibold text-xl dark:text-white'>{userName}</h4>
-                          <span className=' text-base text-gray-600 dark:text-white'>{userEmail}</span>
+                          <h4 className='font-semibold text-xl dark:text-white'>{userData?.userName}</h4>
+                          <span className=' text-base text-gray-600 dark:text-white'>{userData?.email}</span>
                       </div>
                   </div>
                 </div>

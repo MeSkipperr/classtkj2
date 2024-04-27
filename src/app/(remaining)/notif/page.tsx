@@ -65,11 +65,11 @@ const Notifikasi =  ()=>{
             {
                 isLoading ? (
                     <>
-                    <SkeletonNotifikasi />
-                    <SkeletonNotifikasi />
-                    <SkeletonNotifikasi />
-                    <SkeletonNotifikasi />
-                    <SkeletonNotifikasi />
+                        <SkeletonNotifikasi />
+                        <SkeletonNotifikasi />
+                        <SkeletonNotifikasi />
+                        <SkeletonNotifikasi />
+                        <SkeletonNotifikasi />
                     </>
                 ) : (
                     <>
